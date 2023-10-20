@@ -7,30 +7,33 @@ const addMovie=async(req,res)=>{
 }
 
 const updateMovie=async(req,res)=>{
-    const updated= await Movie.findByIdAndUpdate(req.params.id,req.body)
+    let updated= await Movie.findByIdAndUpdate(req.params.id,req.body)
+    updated=await Movie.findById(req.params.id)
     res.status(200).send(updated)
 }
 
 const deleteMovie=async(req,res)=>{
-    const remove= await Movie.findByIdAndDelete(req.params.id)
-    res.status(200).send(remove)
+    let remove= await Movie.findByIdAndDelete(req.params.id)
+    remove=await Movie.findById(req.params.id)
+    res.status(200).send({message:"Movie deleted"})
 }
 
 const ratingMovie=async(req,res)=>{
-    const movie=await Movie.findById(req.params.id)
+    let movie=await Movie.findById(req.params.id)
     if(!movie) return res.send({error: "movie not found"});
-    
-    // const rating=await movie.ratings.filter((e,index)=>index=="0"?req.body.ratings:e)
-    const ratings=await Movie.findByIdAndUpdate(req.params.id,req.body)
-    res.send({message:"update Rating",ratings})
+
+    movie.ratings.push({value:req.body.rating})
+    await movie.save()
+    res.send(movie)
 }
 
 const commentMovie=async(req,res)=>{
-    const movie=await Movie.findById(req.params.id)
+    let movie=await Movie.findById(req.params.id)
     if(!movie) return res.send({error: "movie not found"});
     
-    const comments=await Movie.findByIdAndUpdate(req.params.id,req.body)
-    res.send({message:"update Rating",comments})
+    movie.comments.push({text:req.body.text})
+    await movie.save()
+    res.send(movie)
 }
 
 const findeMovie=async(req,res)=>{
